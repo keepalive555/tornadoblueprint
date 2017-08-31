@@ -16,7 +16,7 @@ blueprint = None
 
 def setup_func():
     global blueprint
-    blueprint = Blueprint(r'*', '/users')
+    blueprint = Blueprint(r'localhost', '/users')
 
 
 def teardown_func():

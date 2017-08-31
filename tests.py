@@ -5,12 +5,18 @@ from __future__ import print_function
 
 import nose
 import tornado.web
+import tornado.ioloop
+import tornado.httpserver
 
-from tornadoblueprint.blueprint import Blueprint
+from tornadoblueprint.blueprint import Blueprint, HotSwapApplication
+
+
+blueprint = None
 
 
 def setup_func():
-    pass
+    global blueprint
+    blueprint = Blueprint(r'*', '/users')
 
 
 def teardown_func():
@@ -19,14 +25,27 @@ def teardown_func():
 
 @nose.with_setup(setup_func, teardown_func)
 def test_blueprint():
-    blueprint = Blueprint('*.example.com', '/users')
 
     @blueprint.route('/list')
     class DemoHandler(tornado.web.RequestHandler):
-
         def get(self):
-            self.write('demo handler.')
+            return self.write('demo handler.')
+
+
+@nose.with_setup(setup_func, teardown_func)
+def test_application():
+
+    def callback():
+        tornado.ioloop.IOLoop.current().stop()
+    app = HotSwapApplication()
+    print(app.register_blueprints())
+    httpserver = tornado.httpserver.HTTPServer(app)
+    httpserver.listen(8000)
+    ioloop = tornado.ioloop.IOLoop.current()
+    ioloop.add_timeout(ioloop.time()+200, callback)
+    ioloop.start()
 
 
 if __name__ == '__main__':
-    nose.run()
+    # nose.run()
+    test_application()

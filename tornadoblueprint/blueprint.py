@@ -61,15 +61,16 @@ class HotSwapApplication(tornado.web.Application):
         if args and args[0] \
                 and isinstance(args[0], tornado.web.Application):
             self.app = args[0]
-            return
-
-        self.app = super(HotSwapApplication, self).__init__(*args, **kwargs)
+        else:
+            super(HotSwapApplication, self).__init__(*args, **kwargs)
+            self.app = self
 
     @classmethod
     def proxy(cls, app):
         return cls(app)
 
-    def register_blueprints(self, ):
+    def register_blueprints(self):
         blueprints = BlueprintMeta.get_all_blueprints()
         for blueprint in blueprints:
             self.app.add_handlers(blueprint.host, blueprint.rules)
+        return blueprints

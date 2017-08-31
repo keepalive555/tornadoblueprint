@@ -42,10 +42,9 @@ def test_application():
     httpserver = tornado.httpserver.HTTPServer(app)
     httpserver.listen(8000)
     ioloop = tornado.ioloop.IOLoop.current()
-    ioloop.add_timeout(ioloop.time()+200, callback)
+    ioloop.add_timeout(ioloop.time() + 1, callback)
     ioloop.start()
 
 
 if __name__ == '__main__':
-    # nose.run()
-    test_application()
+    nose.run()

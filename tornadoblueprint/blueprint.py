@@ -20,7 +20,7 @@ class BlueprintMeta(type):
 
     def __new__(metacls, cls_name, bases, namespace):
         _class = super(BlueprintMeta, metacls).__new__(
-                metacls, cls_name, bases, namespace)
+            metacls, cls_name, bases, namespace)
         metacls.derived_class.append(_class)
         return _class
 

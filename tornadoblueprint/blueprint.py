@@ -5,6 +5,7 @@
 
 import functools
 
+import six
 import tornado.web
 
 
@@ -44,9 +45,9 @@ def get_plugged_in_routes():
     return BlueprintMeta.get_plugged_in_routes()
 
 
+@six.add_metaclass(BlueprintMeta)
 class Blueprint(object):
 
-    __metaclass__ = BlueprintMeta
     blueprints = []
 
     def __init__(self, name, prefix='', host='.*'):

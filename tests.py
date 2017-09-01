@@ -16,7 +16,7 @@ from tornadoblueprint.blueprint import (
 blueprint = Blueprint(__name__, '/home')
 
 
-@blueprint.route('/welcome', name='demo')
+@blueprint.route('/welcome')
 class DemoHandler(tornado.web.RequestHandler):
     def get(self):
         return self.write('Welcome!')
@@ -50,4 +50,5 @@ def test_application():
 
 
 if __name__ == '__main__':
-    nose.run()
+    # nose.run()
+    test_application()

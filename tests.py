@@ -8,15 +8,24 @@ import tornado.web
 import tornado.ioloop
 import tornado.httpserver
 
-from tornadoblueprint.blueprint import Blueprint, HotSwapApplication
+from tornadoblueprint.blueprint import (
+    Blueprint, BlueprintMeta,  HotSwapApplication)
 
 
-blueprint = None
+# blueprint = None
+blueprint = Blueprint(r'localhost', '/users')
+
+
+@blueprint.route('/list')
+class DemoHandler(tornado.web.RequestHandler):
+    def get(self):
+        return self.write('demo handler.')
 
 
 def setup_func():
-    global blueprint
-    blueprint = Blueprint(r'localhost', '/users')
+    #  global blueprint
+    #  blueprint = Blueprint(r'localhost', '/users')
+    pass
 
 
 def teardown_func():
@@ -42,9 +51,10 @@ def test_application():
     httpserver = tornado.httpserver.HTTPServer(app)
     httpserver.listen(8000)
     ioloop = tornado.ioloop.IOLoop.current()
-    ioloop.add_timeout(ioloop.time() + 1, callback)
+    ioloop.add_timeout(ioloop.time() + 100, callback)
     ioloop.start()
 
 
 if __name__ == '__main__':
-    nose.run()
+    # nose.run()
+    test_application()

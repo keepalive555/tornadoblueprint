@@ -46,9 +46,10 @@ class Blueprint(object):
 
     def route(self, uri):
         def decorator(handler):
+            self.rules.append((self.prefix + uri, handler))
+
             @functools.wraps(handler)
             def wrapper(*args, **kwargs):
-                self.rules.append((self.prefix + uri, handler))
                 res = handler(*args, **kwargs)
                 return res
             return wrapper
@@ -60,10 +61,10 @@ class HotSwapApplication(tornado.web.Application):
     def __init__(self, *args, **kwargs):
         if args and args[0] \
                 and isinstance(args[0], tornado.web.Application):
-            self.app = args[0]
+            _inst = args[0]
         else:
-            super(HotSwapApplication, self).__init__(*args, **kwargs)
-            self.app = self
+            _inst = self
+        super(HotSwapApplication, _inst).__init__(*args, **kwargs)
 
     @classmethod
     def proxy(cls, app):
@@ -72,5 +73,6 @@ class HotSwapApplication(tornado.web.Application):
     def register_blueprints(self):
         blueprints = BlueprintMeta.get_all_blueprints()
         for blueprint in blueprints:
-            self.app.add_handlers(blueprint.host, blueprint.rules)
+            print blueprint.rules
+            self.add_handlers(blueprint.host, blueprint.rules)
         return blueprints

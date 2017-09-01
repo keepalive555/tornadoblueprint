@@ -1,6 +1,7 @@
 # TornadoBlueprint
 
 ![build](https://travis-ci.org/keepalive555/tornadoblueprint.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/keepalive555/tornadoblueprint/badge.svg?branch=master)](https://coveralls.io/github/keepalive555/tornadoblueprint?branch=master)
 
 > Tornado框架，蓝图功能的第三方实现。
 

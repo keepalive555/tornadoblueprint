@@ -7,44 +7,37 @@ import nose
 import tornado.web
 import tornado.ioloop
 import tornado.httpserver
+import tornado.httpclient
 
 from tornadoblueprint.blueprint import (
     Blueprint, BlueprintMeta, HotPlugApplication)
 
 
-blueprint = Blueprint(__name__, '/users')
+blueprint = Blueprint(__name__, '/home')
 
 
-@blueprint.route('/list', name='demo')
+@blueprint.route('/welcome', name='demo')
 class DemoHandler(tornado.web.RequestHandler):
     def get(self):
-        return self.write('demo handler.')
+        return self.write('Welcome!')
 
 
-def setup_func():
-    pass
-
-
-def teardown_func():
-    pass
-
-
-@nose.with_setup(setup_func, teardown_func)
 def test_get_plugged_in_blueprints():
     ret = BlueprintMeta.get_plugged_in_blueprints()
     nose.tools.assert_not_equals(ret, [])
 
 
-@nose.with_setup(setup_func, teardown_func)
 def test_get_plugged_in_routes():
     ret = BlueprintMeta.get_plugged_in_routes()
     nose.tools.assert_not_equals(ret, [])
 
 
-@nose.with_setup(setup_func, teardown_func)
 def test_application():
 
     def exit_callback():
+        client = tornado.httpclient.AsyncHTTPClient()
+        ret = client.fetch('http://localhost:8000/home/welcome')
+        nose.tools.assert_is_not_none(ret)
         tornado.ioloop.IOLoop.current().stop()
 
     app = HotPlugApplication()

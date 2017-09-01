@@ -8,7 +8,7 @@ import functools
 import tornado.web
 
 
-__version__ = '1.0.0'
+__version__ = '0.1.1'
 __organization__ = 'www.360.cn'
 __author__ = 'gatsby'
 __github__ = 'https://github.com/keepalive555/'

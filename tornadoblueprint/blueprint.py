@@ -25,18 +25,23 @@ class BlueprintMeta(type):
         return _class
 
     @classmethod
-    def get_all_blueprints(metacls):
+    def get_plugged_in_blueprints(metacls):
         blueprints = []
         for _class in metacls.derived_class:
-            blueprints.extend(_class.blueprints)
+            blueprints.extend(
+                [x for x in _class.blueprints if x.hotplug is True])
         return blueprints
 
     @classmethod
-    def get_all_routes(metacls):
+    def get_plugged_in_routes(metacls):
         routes = []
-        for blueprint in metacls.get_all_blueprints():
+        for blueprint in metacls.get_plugged_in_blueprints():
             routes.append((blueprint.host, blueprint.rules))
         return routes
+
+
+def get_plugged_in_routes():
+    return BlueprintMeta.get_plugged_in_routes()
 
 
 class Blueprint(object):
@@ -44,14 +49,23 @@ class Blueprint(object):
     __metaclass__ = BlueprintMeta
     blueprints = []
 
-    def __init__(self, name, prefix, host='.*'):
-        assert prefix and prefix[0] == '/'
+    def __init__(self, name, prefix='', host='.*'):
         self.name = name
         self.host = host
         self.prefix = prefix
 
         self.blueprints.append(self)
         self.rules = []
+        self._hotplug = True
+
+    @property
+    def hotplug(self):
+        return self._hotplug
+
+    @hotplug.setter
+    def hotplug(self, v):
+        if isinstance(v, bool):
+            self._hotplug = v
 
     def route(self, uri, params=None, name=None):
         def decorator(handler):
@@ -75,7 +89,7 @@ class Blueprint(object):
         return blueprint
 
 
-class HotSwapApplication(tornado.web.Application):
+class HotPlugApplication(tornado.web.Application):
 
     def __init__(self, *args, **kwargs):
         if args and args[0] \
@@ -83,14 +97,12 @@ class HotSwapApplication(tornado.web.Application):
             _inst = args[0]
         else:
             _inst = self
-        super(HotSwapApplication, _inst).__init__(*args, **kwargs)
+        super(HotPlugApplication, _inst).__init__(*args, **kwargs)
 
     @classmethod
     def proxy(cls, app):
         return cls(app)
 
     def register_blueprints(self):
-        blueprints = BlueprintMeta.get_all_blueprints()
-        for blueprint in blueprints:
-            self.add_handlers(blueprint.host, blueprint.rules)
-        return blueprints
+        for host, rules in BlueprintMeta.get_plugged_in_routes():
+            self.add_handlers(host, rules)

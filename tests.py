@@ -9,7 +9,7 @@ import tornado.ioloop
 import tornado.httpserver
 
 from tornadoblueprint.blueprint import (
-    Blueprint, BlueprintMeta, HotSwapApplication)
+    Blueprint, BlueprintMeta, HotPlugApplication)
 
 
 blueprint = Blueprint(__name__, '/users')
@@ -30,8 +30,14 @@ def teardown_func():
 
 
 @nose.with_setup(setup_func, teardown_func)
-def test_get_all_blueprints():
-    ret = BlueprintMeta.get_all_blueprints()
+def test_get_plugged_in_blueprints():
+    ret = BlueprintMeta.get_plugged_in_blueprints()
+    nose.tools.assert_not_equals(ret, [])
+
+
+@nose.with_setup(setup_func, teardown_func)
+def test_get_plugged_in_routes():
+    ret = BlueprintMeta.get_plugged_in_routes()
     nose.tools.assert_not_equals(ret, [])
 
 
@@ -41,7 +47,7 @@ def test_application():
     def exit_callback():
         tornado.ioloop.IOLoop.current().stop()
 
-    app = HotSwapApplication()
+    app = HotPlugApplication()
     app.register_blueprints()
     httpserver = tornado.httpserver.HTTPServer(app)
     httpserver.listen(8000)

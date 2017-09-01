@@ -25,11 +25,18 @@ class BlueprintMeta(type):
         return _class
 
     @classmethod
-    def get_all_blueprints(self):
+    def get_all_blueprints(metacls):
         blueprints = []
-        for _class in self.derived_class:
+        for _class in metacls.derived_class:
             blueprints.extend(_class.blueprints)
         return blueprints
+
+    @classmethod
+    def get_all_routes(metacls):
+        routes = []
+        for blueprint in metacls.get_all_blueprints():
+            routes.append((blueprint.host, blueprint.rules))
+        return routes
 
 
 class Blueprint(object):
@@ -37,10 +44,12 @@ class Blueprint(object):
     __metaclass__ = BlueprintMeta
     blueprints = []
 
-    def __init__(self, host, prefix):
+    def __init__(self, name, prefix, host='.*'):
         assert prefix and prefix[0] == '/'
+        self.name = name
         self.host = host
         self.prefix = prefix
+
         self.blueprints.append(self)
         self.rules = []
 
@@ -54,6 +63,16 @@ class Blueprint(object):
                 return res
             return wrapper
         return decorator
+
+    def get_route_rules(self):
+        return self.host, self.rules
+
+    @staticmethod
+    def get_blueprint(cls, name):
+        for blueprint in cls.blueprints:
+            if blueprint.name == name:
+                break
+        return blueprint
 
 
 class HotSwapApplication(tornado.web.Application):

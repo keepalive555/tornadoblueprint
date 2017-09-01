@@ -12,7 +12,7 @@ from tornadoblueprint.blueprint import (
     Blueprint, BlueprintMeta, HotSwapApplication)
 
 
-blueprint = Blueprint(r'localhost', '/users')
+blueprint = Blueprint(__name__, '/users')
 
 
 @blueprint.route('/list', name='demo')
@@ -42,6 +42,7 @@ def test_application():
         tornado.ioloop.IOLoop.current().stop()
 
     app = HotSwapApplication()
+    app.register_blueprints()
     httpserver = tornado.httpserver.HTTPServer(app)
     httpserver.listen(8000)
     ioloop = tornado.ioloop.IOLoop.current()

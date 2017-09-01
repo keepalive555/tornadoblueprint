@@ -1,4 +1,4 @@
-# TornadBlueprint
+# TornadoBlueprint
 
 ![build](https://travis-ci.org/keepalive555/tornadoblueprint.svg?branch=master)
 

@@ -73,6 +73,5 @@ class HotSwapApplication(tornado.web.Application):
     def register_blueprints(self):
         blueprints = BlueprintMeta.get_all_blueprints()
         for blueprint in blueprints:
-            print blueprint.rules
             self.add_handlers(blueprint.host, blueprint.rules)
         return blueprints

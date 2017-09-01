@@ -1,21 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
-VERSION = '0.1.1'
+VERSION = '0.1.4'
 
 long_description = ''
-with open('README.md') as f:
+with open('README.txt') as f:
     long_description = f.read()
 
 setup(
-    name='',
+    name='tornadoblueprint',
     version=VERSION,
     description='',
     long_description=long_description,
     classifiers=[],
-    classifiers=['Tornado', 'Blueprint'],
+    keywords='Tornado,Blueprint',
     author='gatsby',
     author_email='dreamcatchwang1991@gmail.com',
     url='https://github.com/keepalive555/tornadoblueprint',

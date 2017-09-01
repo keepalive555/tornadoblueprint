@@ -44,9 +44,9 @@ class Blueprint(object):
         self.blueprints.append(self)
         self.rules = []
 
-    def route(self, uri):
+    def route(self, uri, params=None, name=None):
         def decorator(handler):
-            self.rules.append((self.prefix + uri, handler))
+            self.rules.append((self.prefix + uri, handler, params, name))
 
             @functools.wraps(handler)
             def wrapper(*args, **kwargs):

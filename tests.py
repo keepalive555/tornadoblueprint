@@ -9,13 +9,13 @@ import tornado.ioloop
 import tornado.httpserver
 
 from tornadoblueprint.blueprint import (
-    Blueprint, BlueprintMeta,  HotSwapApplication)
+    Blueprint, BlueprintMeta, HotSwapApplication)
 
 
 blueprint = Blueprint(r'localhost', '/users')
 
 
-@blueprint.route('/list')
+@blueprint.route('/list', name='demo')
 class DemoHandler(tornado.web.RequestHandler):
     def get(self):
         return self.write('demo handler.')
@@ -33,18 +33,15 @@ def teardown_func():
 def test_get_all_blueprints():
     ret = BlueprintMeta.get_all_blueprints()
     nose.tools.assert_not_equals(ret, [])
-    print(ret)
 
 
 @nose.with_setup(setup_func, teardown_func)
 def test_application():
 
     def exit_callback():
-        print("quit ioloop.")
         tornado.ioloop.IOLoop.current().stop()
 
     app = HotSwapApplication()
-    print(app.register_blueprints())
     httpserver = tornado.httpserver.HTTPServer(app)
     httpserver.listen(8000)
     ioloop = tornado.ioloop.IOLoop.current()

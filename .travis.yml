@@ -7,7 +7,10 @@ python:
     - "3.5"
 install:
     - pip install -r requirements.txt
+    - pip install coveralls
 script:
     - flake8 --ignore=E501 ./
     - nosetests -v --with-coverage -cover-package tornadoblueprint --cover-xml --cover-erase ./
     - coverage report
+after_success:
+    - coveralls

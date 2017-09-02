@@ -10,5 +10,4 @@ install:
 script:
     - flake8 --ignore=E501 ./
     - nosetests -v --with-coverage -cover-package tornadoblueprint --cover-xml --cover-erase ./
-    - coverage combine
     - coverage report

@@ -9,4 +9,6 @@ install:
     - pip install -r requirements.txt
 script:
     - flake8 --ignore=E501 ./
-    - nosetests ./
+    - nosetests -v --with-coverage -cover-package tornadoblueprint --cover-xml --cover-erase ./
+    - coverage combine
+    - coverage report

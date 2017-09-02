@@ -50,5 +50,4 @@ def test_application():
 
 
 if __name__ == '__main__':
-    # nose.run()
-    test_application()
+    nose.run()

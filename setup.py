@@ -3,10 +3,10 @@
 
 from setuptools import setup
 
-VERSION = '0.1.4'
+VERSION = '0.1.8'
 
 long_description = ''
-with open('README.md', 'rt') as f:
+with open('README.txt', 'rt') as f:
     long_description = f.read()
 
 setup(

@@ -6,7 +6,7 @@ from setuptools import setup
 VERSION = '0.1.4'
 
 long_description = ''
-with open('README.txt') as f:
+with open('README.md', 'rt') as f:
     long_description = f.read()
 
 setup(

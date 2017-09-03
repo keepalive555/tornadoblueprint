@@ -6,10 +6,8 @@ import tornado.ioloop
 import tornado.httpserver
 
 from tornadoblueprint.blueprint import Blueprint
-from tornadoblueprint.blueprint import (
-    HotPlugApplication,
-    get_plugged_in_routes,
-)
+from tornadoblueprint.blueprint import HotPlugApplication
+from tornadoblueprint.blueprint import get_plugged_in_routes
 
 
 indexbp = Blueprint(__name__, prefix='/home')

@@ -41,6 +41,10 @@ class BlueprintMeta(type):
         return routes
 
 
+def get_plugged_in_blueprints():
+    return BlueprintMeta.get_plugged_in_blueprints()
+
+
 def get_plugged_in_routes():
     return BlueprintMeta.get_plugged_in_routes()
 
@@ -86,8 +90,7 @@ class Blueprint(object):
     def get_blueprint(cls, name):
         for blueprint in cls.blueprints:
             if blueprint.name == name:
-                break
-        return blueprint
+                return blueprint
 
 
 class HotPlugApplication(tornado.web.Application):
@@ -105,5 +108,5 @@ class HotPlugApplication(tornado.web.Application):
         return cls(app)
 
     def register_blueprints(self):
-        for host, rules in BlueprintMeta.get_plugged_in_routes():
+        for host, rules in get_plugged_in_routes():
             self.add_handlers(host, rules)

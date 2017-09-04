@@ -83,6 +83,9 @@ class Blueprint(object):
             return wrapper
         return decorator
 
+    def __call__(self, *args, **kwargs):
+        return self.route(*args, **kwargs)
+
     def get_route_rules(self):
         return self.host, self.rules
 

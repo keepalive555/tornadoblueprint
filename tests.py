@@ -10,7 +10,12 @@ import tornado.httpserver
 import tornado.httpclient
 
 from tornadoblueprint.blueprint import (
-    Blueprint, BlueprintMeta, HotPlugApplication)
+    Blueprint,
+    BlueprintMeta,
+    HotPlugApplication,
+    get_plugged_in_blueprints,
+    get_plugged_in_routes,
+)
 
 
 blueprint = Blueprint(__name__, '/home')
@@ -29,6 +34,16 @@ def test_get_plugged_in_blueprints():
 
 def test_get_plugged_in_routes():
     ret = BlueprintMeta.get_plugged_in_routes()
+    nose.tools.assert_not_equals(ret, [])
+
+
+def test_get_plugged_in_blueprints_func():
+    ret = get_plugged_in_blueprints()
+    nose.tools.assert_not_equals(ret, [])
+
+
+def test_get_plugged_in_routes_func():
+    ret = get_plugged_in_routes()
     nose.tools.assert_not_equals(ret, [])
 
 

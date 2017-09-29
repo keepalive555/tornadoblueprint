@@ -9,7 +9,7 @@ import six
 import tornado.web
 
 
-__version__ = '0.1.8'
+__version__ = '0.2.0'
 __organization__ = 'www.360.cn'
 __author__ = 'gatsby'
 __github__ = 'https://github.com/keepalive555/'

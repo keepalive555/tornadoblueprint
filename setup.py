@@ -3,7 +3,7 @@
 
 from setuptools import setup
 
-VERSION = '0.1.8'
+VERSION = '0.2.0'
 
 long_description = ''
 with open('README.txt', 'rt') as f:
@@ -23,5 +23,5 @@ setup(
     packages=['tornadoblueprint'],
     include_package_data=True,
     zip_safe=True,
-    install_requires=['tornado'],
+    install_requires=['tornado>=2.4'],
 )

@@ -1,2 +1,9 @@
 *.pyc
 *.swp
+*.swo
+__pycache__
+.coverage
+coverage.xml
+dist/
+build/
+tornadoblueprint.egg-info/

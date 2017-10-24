@@ -25,38 +25,23 @@ import tornado.web
 import tornado.ioloop
 import tornado.httpserver
 
-from tornadoblueprint.blueprint import Blueprint
-from tornadoblueprint.blueprint import HotPlugApplication
-from tornadoblueprint.blueprint import get_plugged_in_routes
+from tornadoblueprint import blueprint
 
 
-indexbp = Blueprint(__name__, prefix='/home')
+indexbp = blueprint.Blueprint(__name__, prefix='')
 
 
-@indexbp.route('/welcome')
-class HomeHandler(tornado.web.RequestHandler):
+@indexbp.route('/users/<int:user_id>/')
+class UserHandler(tornado.web.RequestHandler):
 
-    def get(self):
-        self.write("<h3>Hello TornadoBlueprint.<h3>")
+    def get(self, user_id):
+        self.write("<h3>Hello, user<%d>.<h3>" % int(user_id))
         return self.finish()
 
 
-def get_app1():
-    app = tornado.web.Application()
-    for host, rules in get_plugged_in_routes():
-        app.add_handlers(host, rules)
-    return app
-
-
-def get_app2():
-    app = HotPlugApplication()
-    app.register_blueprints()
-    return app
-
-
 if __name__ == '__main__':
-    app = get_app1()
-    server = tornado.httpserver.HTTPServer(app)
+    app = tornado.web.Application()
+    server = tornado.httpserver.HTTPServer(blueprint.wraps(app))
     server.listen(8000)
     tornado.ioloop.IOLoop.current().start()
 

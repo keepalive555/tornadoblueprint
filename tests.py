@@ -9,45 +9,19 @@ import tornado.ioloop
 import tornado.httpserver
 import tornado.httpclient
 
-from tornadoblueprint.blueprint import (
-    Blueprint,
-    BlueprintMeta,
-    HotPlugApplication,
-    get_plugged_in_blueprints,
-    get_plugged_in_routes,
-)
+from tornadoblueprint import blueprint
 
 
-blueprint = Blueprint(__name__, '/home')
+bp = blueprint.Blueprint(__name__, '/home')
 
 
-@blueprint.route('/welcome')
+@bp.route('/welcome')
 class DemoHandler(tornado.web.RequestHandler):
     def get(self):
         return self.write('Welcome!')
 
 
-def test_get_plugged_in_blueprints():
-    ret = BlueprintMeta.get_plugged_in_blueprints()
-    nose.tools.assert_not_equals(ret, [])
-
-
-def test_get_plugged_in_routes():
-    ret = BlueprintMeta.get_plugged_in_routes()
-    nose.tools.assert_not_equals(ret, [])
-
-
-def test_get_plugged_in_blueprints_func():
-    ret = get_plugged_in_blueprints()
-    nose.tools.assert_not_equals(ret, [])
-
-
-def test_get_plugged_in_routes_func():
-    ret = get_plugged_in_routes()
-    nose.tools.assert_not_equals(ret, [])
-
-
-def test_application():
+def test_wraps():
 
     def exit_callback():
         client = tornado.httpclient.AsyncHTTPClient()
@@ -55,9 +29,8 @@ def test_application():
         nose.tools.assert_is_not_none(ret)
         tornado.ioloop.IOLoop.current().stop()
 
-    app = HotPlugApplication()
-    app.register_blueprints()
-    httpserver = tornado.httpserver.HTTPServer(app)
+    httpserver = tornado.httpserver.HTTPServer(
+        blueprint.wraps(tornado.web.Application()))
     httpserver.listen(8000)
     ioloop = tornado.ioloop.IOLoop.current()
     ioloop.add_timeout(ioloop.time() + 1, exit_callback)

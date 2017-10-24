@@ -3,13 +3,16 @@
 
 """Tornado Blueprint蓝图的实现。"""
 
+import re
 import functools
 
 import six
-import tornado.web
 
 
-__version__ = '0.2.0'
+__all__ = ['Blueprint', 'wraps']
+
+
+__version__ = '0.2.1'
 __organization__ = 'www.360.cn'
 __author__ = 'gatsby'
 __github__ = 'https://github.com/keepalive555/'
@@ -30,7 +33,7 @@ class BlueprintMeta(type):
         blueprints = []
         for _class in metacls.derived_class:
             blueprints.extend(
-                [x for x in _class.blueprints if x.hotplug is True])
+                [x for x in _class.blueprints if x.enabled is True])
         return blueprints
 
     @classmethod
@@ -41,12 +44,9 @@ class BlueprintMeta(type):
         return routes
 
 
-def get_plugged_in_blueprints():
-    return BlueprintMeta.get_plugged_in_blueprints()
-
-
-def get_plugged_in_routes():
-    return BlueprintMeta.get_plugged_in_routes()
+_REGEXIES = [
+    (re.compile(r'<int:.+>'), r'(\d+)'),
+]
 
 
 @six.add_metaclass(BlueprintMeta)
@@ -61,20 +61,23 @@ class Blueprint(object):
 
         self.blueprints.append(self)
         self.rules = []
-        self._hotplug = True
+        self._enabled = True
 
     @property
-    def hotplug(self):
-        return self._hotplug
+    def enabled(self):
+        return self._enabled
 
-    @hotplug.setter
-    def hotplug(self, v):
-        if isinstance(v, bool):
-            self._hotplug = v
+    @enabled.setter
+    def enabled(self, v):
+        self._enabled = bool(v)
 
-    def route(self, uri, params=None, name=None):
+    def route(self, uri, params=None, name=None, methods=None):
         def decorator(handler):
-            self.rules.append((self.prefix + uri, handler, params, name))
+            assert uri[0] == '/'
+            internal_uri = uri
+            for _re, repl in _REGEXIES:
+                internal_uri = _re.sub(repl, internal_uri)
+            self.rules.append((self.prefix + internal_uri, handler, params, name))  # noqa: E501
 
             @functools.wraps(handler)
             def wrapper(*args, **kwargs):
@@ -89,27 +92,10 @@ class Blueprint(object):
     def get_route_rules(self):
         return self.host, self.rules
 
-    @staticmethod
-    def get_blueprint(cls, name):
-        for blueprint in cls.blueprints:
-            if blueprint.name == name:
-                return blueprint
 
-
-class HotPlugApplication(tornado.web.Application):
-
-    def __init__(self, *args, **kwargs):
-        if args and args[0] \
-                and isinstance(args[0], tornado.web.Application):
-            _inst = args[0]
-        else:
-            _inst = self
-        super(HotPlugApplication, _inst).__init__(*args, **kwargs)
-
-    @classmethod
-    def proxy(cls, app):
-        return cls(app)
-
-    def register_blueprints(self):
-        for host, rules in get_plugged_in_routes():
-            self.add_handlers(host, rules)
+def wraps(app):
+    assert hasattr(app, 'add_handlers') \
+        and hasattr(app.add_handlers, '__call__')
+    for host, rules in BlueprintMeta.get_plugged_in_routes():
+        app.add_handlers(host, rules)
+    return app

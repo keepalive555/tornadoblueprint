@@ -3,7 +3,15 @@
 ![build](https://travis-ci.org/keepalive555/tornadoblueprint.svg?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/keepalive555/tornadoblueprint/badge.svg?branch=master)](https://coveralls.io/github/keepalive555/tornadoblueprint?branch=master)
 
-> Tornado框架，蓝图功能的第三方轻量级实现，库提供了细粒度接口，可在代码中灵活使用。
+## 概述
+
+笔者比较喜欢`Flask`框架`route`风格的`URL`路由，`Tornado`框架中`URL`路由是指定`tornado.web.Application`的参数，很不`Pythonic`，所以笔者为`Tornado`框架编写了`Flask`风格蓝图小玩具。
+
+现阶段支持的功能：
+
+- 支持`Blueprint`的`prefix`参数。
+- 支持`Blueprint.route`方法的`methods`参数，限定客户端`HTTP Methods`。
+- 支持`/<int:id>/`等`Flask`风格的`URI`，兼容`Tornado`正则表达式风格`URL`。
 
 ## 1. 安装
 

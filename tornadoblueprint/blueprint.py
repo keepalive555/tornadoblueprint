@@ -13,7 +13,7 @@ from tornado import web
 __all__ = ['Blueprint', 'wraps']
 
 
-__version__ = '0.2.1'
+__version__ = '0.2.2'
 __organization__ = 'www.360.cn'
 __author__ = 'gatsby'
 __github__ = 'https://github.com/keepalive555/'

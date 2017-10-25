@@ -7,6 +7,7 @@ import re
 import functools
 
 import six
+from tornado import web
 
 
 __all__ = ['Blueprint', 'wraps']
@@ -44,9 +45,13 @@ class BlueprintMeta(type):
         return routes
 
 
-_REGEXIES = [
+_REGEXIES = (
     (re.compile(r'<int:.+>'), r'(\d+)'),
-]
+)
+_HTTPMETHODS = (
+    'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD',
+)
+_HANDLERS = [(x, getattr(web.RequestHandler, x.lower())) for x in _HTTPMETHODS]  # noqa
 
 
 @six.add_metaclass(BlueprintMeta)
@@ -71,12 +76,16 @@ class Blueprint(object):
     def enabled(self, v):
         self._enabled = bool(v)
 
-    def route(self, uri, params=None, name=None, methods=None):
+    def route(self, uri, params=None, name=None, methods=('GET',)):
         def decorator(handler):
             assert uri[0] == '/'
             internal_uri = uri
             for _re, repl in _REGEXIES:
                 internal_uri = _re.sub(repl, internal_uri)
+            for method, _handler in _HANDLERS:
+                if method in methods:
+                    continue
+                setattr(handler, method.lower(), _handler)
             self.rules.append((self.prefix + internal_uri, handler, params, name))  # noqa: E501
 
             @functools.wraps(handler)

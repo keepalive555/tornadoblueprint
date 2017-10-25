@@ -11,7 +11,7 @@ from tornadoblueprint import blueprint
 indexbp = blueprint.Blueprint(__name__, prefix='')
 
 
-@indexbp.route('/users/<int:user_id>/')
+@indexbp.route('/users/<int:user_id>/', methods=('GET', 'POST',))
 class UserHandler(tornado.web.RequestHandler):
 
     def get(self, user_id):

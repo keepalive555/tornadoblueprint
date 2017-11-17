@@ -39,7 +39,7 @@ from tornadoblueprint import blueprint
 indexbp = blueprint.Blueprint(__name__, prefix='')
 
 
-@indexbp.route('/users/<int:user_id>/plans/<int:plan_id>')
+@indexbp.route('/users/<int:user_id>/plans/<int:plan_id>/')
 class UserHandler(tornado.web.RequestHandler):
 
     def get(self, user_id, plan_id):

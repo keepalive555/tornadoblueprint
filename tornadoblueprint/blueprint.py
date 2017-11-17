@@ -9,9 +9,7 @@ import functools
 import six
 from tornado import web
 
-
 __all__ = ['Blueprint', 'wraps']
-
 
 __version__ = '0.2.2'
 __organization__ = 'www.360.cn'
@@ -20,7 +18,6 @@ __github__ = 'https://github.com/keepalive555/'
 
 
 class BlueprintMeta(type):
-
     derived_class = []
 
     def __new__(metacls, cls_name, bases, namespace):
@@ -56,7 +53,6 @@ _HANDLERS = [(x, getattr(web.RequestHandler, x.lower())) for x in _HTTPMETHODS] 
 
 @six.add_metaclass(BlueprintMeta)
 class Blueprint(object):
-
     blueprints = []
 
     def __init__(self, name, prefix='', host='.*'):
@@ -80,8 +76,7 @@ class Blueprint(object):
         def decorator(handler):
             assert uri[0] == '/'
             internal_uri = uri
-            for _re, repl in _REGEXIES:
-                internal_uri = _re.sub(repl, internal_uri)
+            internal_uri = re.sub(r'<int:.+?>', r'(\d+)', internal_uri)
             for method, _handler in _HANDLERS:
                 if method in methods:
                     continue
@@ -92,7 +87,9 @@ class Blueprint(object):
             def wrapper(*args, **kwargs):
                 res = handler(*args, **kwargs)
                 return res
+
             return wrapper
+
         return decorator
 
     def __call__(self, *args, **kwargs):
@@ -104,7 +101,7 @@ class Blueprint(object):
 
 def wraps(app):
     assert hasattr(app, 'add_handlers') \
-        and hasattr(app.add_handlers, '__call__')
+           and hasattr(app.add_handlers, '__call__')
     for host, rules in BlueprintMeta.get_plugged_in_routes():
         app.add_handlers(host, rules)
     return app

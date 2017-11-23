@@ -11,7 +11,7 @@ from tornado import web
 
 __all__ = ['Blueprint', 'wraps']
 
-__version__ = '0.2.2'
+__version__ = '0.2.4'
 __organization__ = 'www.360.cn'
 __author__ = 'gatsby'
 __github__ = 'https://github.com/keepalive555/'
@@ -43,11 +43,15 @@ class BlueprintMeta(type):
 
 
 _REGEXIES = (
-    (re.compile(r'<int:.+>'), r'(\d+)'),
+    (re.compile(r'<int:.+>'), r'([-+]?\d+)'),  # <int:>
+    (re.compile(r'<float:.+>'), r'(\d*\.?\d+)'),  # <float:>
+    # 注意：需要用(?:)丢弃捕获到的捕获组，才可以保证捕获到的为完整的uuid
+    (re.compile(r'<uuid:.+>'), r'((?:[0-9a-fA-F]+-){4}[0-9a-fA-F]+)'),  # <uuid:>  # noqa
 )
 _HTTPMETHODS = (
-    'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD',
+    'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS',
 )
+# XXX: 更优实现，将该方法直接从类的属性里面拿掉？？？
 _HANDLERS = [(x, getattr(web.RequestHandler, x.lower())) for x in _HTTPMETHODS]  # noqa
 
 
@@ -76,7 +80,8 @@ class Blueprint(object):
         def decorator(handler):
             assert uri[0] == '/'
             internal_uri = uri
-            internal_uri = re.sub(r'<int:.+?>', r'(\d+)', internal_uri)
+            for _re, repl in _REGEXIES:
+                internal_uri = _re.sub(repl, internal_uri)
             for method, _handler in _HANDLERS:
                 if method in methods:
                     continue
@@ -101,7 +106,8 @@ class Blueprint(object):
 
 def wraps(app):
     assert hasattr(app, 'add_handlers') \
-           and hasattr(app.add_handlers, '__call__')
+        and hasattr(app.add_handlers, '__call__')
     for host, rules in BlueprintMeta.get_plugged_in_routes():
         app.add_handlers(host, rules)
+        print(rules)
     return app

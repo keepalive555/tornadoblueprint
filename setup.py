@@ -3,7 +3,7 @@
 
 from setuptools import setup
 
-VERSION = '0.2.2'
+VERSION = '0.2.4'
 
 long_description = ''
 with open('README.txt', 'rt') as f:

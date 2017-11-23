@@ -8,6 +8,9 @@ python:
 install:
     - pip install -r requirements.txt
     - pip install coveralls
+    - pip install flake8==3.0.4
+    - pip install nose==1.3.7
+    - pip install coverage==4.4.1
 script:
     - flake8 --ignore=E501 ./
     - nosetests -v --with-coverage -cover-package tornadoblueprint --cover-xml --cover-erase ./

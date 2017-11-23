@@ -5,7 +5,7 @@
 
 ## 前言
 
-非常感谢提交`PR`的朋友。
+非常感谢提交`PR`的朋友：[@lichao0x7cc](https://github.com/lichao0x7cc/)。
 
 ## 概述
 

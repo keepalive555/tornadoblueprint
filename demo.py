@@ -24,7 +24,7 @@ class FloatHandler(tornado.web.RequestHandler):
 
     def get(self, f1, f2):
         self.write("Sum of %.2f + %.2f = %.2f<br>" % (
-            float(f1), float(f2), float(f1)+float(f2)))
+            float(f1), float(f2), float(f1) + float(f2)))
         return self.finish()
 
 

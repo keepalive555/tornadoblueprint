@@ -3,6 +3,10 @@
 ![build](https://travis-ci.org/keepalive555/tornadoblueprint.svg?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/keepalive555/tornadoblueprint/badge.svg?branch=master)](https://coveralls.io/github/keepalive555/tornadoblueprint?branch=master)
 
+## 前言
+
+非常感谢提交`PR`的朋友。
+
 ## 概述
 
 笔者比较喜欢`Flask`框架`route`风格的`URL`路由，`Tornado`框架中`URL`路由是指定`tornado.web.Application`的参数，很不`Pythonic`，所以笔者为`Tornado`框架编写了`Flask`风格蓝图小玩具。
@@ -11,7 +15,7 @@
 
 - 支持`Blueprint`的`prefix`参数。
 - 支持`Blueprint.route`方法的`methods`参数，限定客户端`HTTP Methods`。
-- 支持`/<int:id>/`等`Flask`风格的`URI`，兼容`Tornado`正则表达式风格`URL`。
+- 支持`/<int:id>/, <float:id>, <uuid:uuid>`等`Flask`风格的`URI`，兼容`Tornado`正则表达式风格`URL`。
 
 ## 1. 安装
 
@@ -39,11 +43,28 @@ from tornadoblueprint import blueprint
 indexbp = blueprint.Blueprint(__name__, prefix='')
 
 
-@indexbp.route('/users/<int:user_id>/plans/<int:plan_id>/')
-class UserHandler(tornado.web.RequestHandler):
+@indexbp.route('/shows/<int:_id>/', methods=('GET', 'POST',))
+class IntHandler(tornado.web.RequestHandler):
 
-    def get(self, user_id, plan_id):
-        self.write("<h3>Hello, user<%d> plan<%d>.<h3>" % (int(user_id), int(plan_id)))
+    def get(self, _id):
+        self.write("Id is: %d<br>" % int(_id))
+        return self.finish()
+
+
+@indexbp.route('/shows/<float:f1>/<float:f2>/', methods=('GET', 'POST',))
+class FloatHandler(tornado.web.RequestHandler):
+
+    def get(self, f1, f2):
+        self.write("Sum of %.2f + %.2f = %.2f<br>" % (
+            float(f1), float(f2), float(f1)+float(f2)))
+        return self.finish()
+
+
+@indexbp.route('/shows/<uuid:guid>/', methods=('GET', 'POST',))
+class UuidHandler(tornado.web.RequestHandler):
+
+    def get(self, guid):
+        self.write("Uuid is: %s<br>" % guid)
         return self.finish()
 
 
@@ -52,5 +73,4 @@ if __name__ == '__main__':
     server = tornado.httpserver.HTTPServer(blueprint.wraps(app))
     server.listen(8000)
     tornado.ioloop.IOLoop.current().start()
-
 ```

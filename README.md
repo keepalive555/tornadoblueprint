@@ -17,12 +17,16 @@
 - 支持`Blueprint.route`方法的`methods`参数，限定客户端`HTTP Methods`。
 - 支持`/<int:id>/, <float:id>, <uuid:uuid>`等`Flask`风格的`URI`，兼容`Tornado`正则表达式风格`URL`。
 
+将来将支持的功能：
+
+- 支持`Flask`框架的`url_for`函数。
+
 ## 1. 安装
 
-***注意：*** `TornadoBlueprint`已上传至`Python`官方`PYPI`服务器，可通过`pip`命令直接安装。
+***注意：*** `TornadoBlueprint`已上传至`Python`官方`PYPI`服务器，可通过`pip`命令直接安装，当前最新版本为`0.2.4`。
 
 ```bash
-pip install tornadoblueprint
+pip install tornadoblueprint==0.2.4
 ```
 
 ## 2. 使用

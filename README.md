@@ -28,7 +28,7 @@ pip install tornadoblueprint==0.2.6
 
 ## 2. 使用
 
-***注意：*** 首先确认`Tornado`框架已被正确安装。
+***注意：*** `TornadoBlueprint`示例代码如下：
 
 ```python
 #!/usr/bin/env python

@@ -8,7 +8,7 @@ import tornado.httpserver
 from tornadoblueprint import blueprint
 
 
-indexbp = blueprint.Blueprint(__name__, prefix='')
+indexbp = blueprint.Blueprint('index', prefix='')
 
 
 @indexbp.route('/shows/<int:_id>/', methods=('GET', 'POST',))
@@ -28,12 +28,22 @@ class FloatHandler(tornado.web.RequestHandler):
         return self.finish()
 
 
+@indexbp.route('/index', methods=('GET', ))
+class IndexHandler(tornado.web.RequestHandler):
+
+    __endpoint__ = 'index'
+
+    def get(self):
+        self.write('Index!!!')
+        return self.finish()
+
+
 @indexbp.route('/shows/<uuid:guid>/', methods=('GET', 'POST',))
 class UuidHandler(tornado.web.RequestHandler):
 
     def get(self, guid):
         self.write("Uuid is: %s<br>" % guid)
-        return self.finish()
+        return self.redirect(blueprint.url_for('index.index'))
 
 
 if __name__ == '__main__':

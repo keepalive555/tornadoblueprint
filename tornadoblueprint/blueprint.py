@@ -5,16 +5,20 @@
 
 import re
 import functools
+import threading
 
 import six
 from tornado import web
 
-__all__ = ['Blueprint', 'wraps']
+
+__all__ = ['Blueprint', 'wraps', 'url_for']
 
 __version__ = '0.2.4'
 __organization__ = 'www.360.cn'
 __author__ = 'gatsby'
 __github__ = 'https://github.com/keepalive555/'
+
+_state = threading.local()
 
 
 class BlueprintMeta(type):
@@ -76,6 +80,10 @@ class Blueprint(object):
     def enabled(self, v):
         self._enabled = bool(v)
 
+    def _get_handler_name(self, handler):
+        return handler.__endpoint__ \
+            if hasattr(handler, '__endpoint__') else handler.__class__.__name__
+
     def route(self, uri, params=None, name=None, methods=('GET',)):
         def decorator(handler):
             assert uri[0] == '/'
@@ -86,7 +94,9 @@ class Blueprint(object):
                 if method in methods:
                     continue
                 setattr(handler, method.lower(), _handler)
-            self.rules.append((self.prefix + internal_uri, handler, params, name))  # noqa: E501
+            rule_name = name or '%s.%s' % (
+                self.name, self._get_handler_name(handler))
+            self.rules.append((self.prefix + internal_uri, handler, params, rule_name))  # noqa: E501
 
             @functools.wraps(handler)
             def wrapper(*args, **kwargs):
@@ -105,9 +115,15 @@ class Blueprint(object):
 
 
 def wraps(app):
+    if hasattr(_state, '__app__'):
+        return getattr(_state, '__app__')
     assert hasattr(app, 'add_handlers') \
         and hasattr(app.add_handlers, '__call__')
     for host, rules in BlueprintMeta.get_plugged_in_routes():
         app.add_handlers(host, rules)
-        print(rules)
+    setattr(_state, '__app__', app)
     return app
+
+
+def url_for(endpoint):
+    return _state.__app__.reverse_url(endpoint)

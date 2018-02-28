@@ -13,7 +13,7 @@ from tornado import web
 
 __all__ = ['Blueprint', 'wraps', 'url_for']
 
-__version__ = '0.2.6'
+__version__ = '0.2.8'
 __organization__ = 'www.360.cn'
 __author__ = 'gatsby'
 __github__ = 'https://github.com/keepalive555/'
@@ -71,6 +71,8 @@ class Blueprint(object):
         self.blueprints.append(self)
         self.rules = []
         self._enabled = True
+        self._errors = set()
+        self._error_handler = None
 
     @property
     def enabled(self):
@@ -84,6 +86,24 @@ class Blueprint(object):
         return handler.__endpoint__ \
             if hasattr(handler, '__endpoint__') else handler.__class__.__name__
 
+    def errorhandler(self, status_code):
+
+        def decorator(func):
+            @functools.wraps(func)
+            def wrapper(inst_self, status_code, **kwargs):
+                if status_code not in self._errors:
+                    return inst_self.__old_error_handler(status_code, **kwargs)
+                return func(inst_self, status_code, **kwargs)
+            self._errors.add(status_code)
+            self._error_handler = wrapper
+            return wrapper
+        return decorator
+
+    def _add_error_handler(self, handler):
+        if self._error_handler:
+            handler.__old_error_handler = handler.write_error
+            handler.write_error = self._error_handler
+
     def route(self, uri, params=None, name=None, methods=('GET',)):
         def decorator(handler):
             assert uri[0] == '/'
@@ -94,6 +114,7 @@ class Blueprint(object):
                 if method in methods:
                     continue
                 setattr(handler, method.lower(), _handler)
+            self._add_error_handler(handler)
             rule_name = name or '%s.%s' % (
                 self.name, self._get_handler_name(handler))
             self.rules.append((self.prefix + internal_uri, handler, params, rule_name))  # noqa: E501

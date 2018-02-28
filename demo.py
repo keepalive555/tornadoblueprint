@@ -11,6 +11,11 @@ from tornadoblueprint import blueprint
 indexbp = blueprint.Blueprint('index', prefix='')
 
 
+@indexbp.errorhandler(500)
+def internal_error(self, status_code, **kwargs):
+    return self.finish("error!")
+
+
 @indexbp.route('/shows/<int:_id>/', methods=('GET', 'POST',))
 class IntHandler(tornado.web.RequestHandler):
 
@@ -44,6 +49,18 @@ class UuidHandler(tornado.web.RequestHandler):
     def get(self, guid):
         self.write("Uuid is: %s<br>" % guid)
         return self.redirect(blueprint.url_for('index.index'))
+
+
+@indexbp.route('/shows/error', methods=('GET',))
+class ErrorHandler(tornado.web.RequestHandler):
+
+    def get(self):
+        a = 100
+        b = 0
+        a / b
+
+    def write_error(self, status_code, **kwargs):
+        self.finish("lalalala")
 
 
 if __name__ == '__main__':

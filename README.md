@@ -15,7 +15,7 @@
 
 - 支持`Blueprint`的`prefix`参数。
 - 支持`Blueprint.route`方法的`methods`参数，限定客户端`HTTP Methods`。
-- 支持`Blueprint.errorhandler`方法，指定蓝图的错误处理方法（用户可在`tornado.web.RequestHandler`派生与该装饰器之间权衡）。
+- 支持`Blueprint.errorhandler`方法，指定蓝图的错误处理方法。
 - 支持`/<int:id>/, <float:id>, <uuid:uuid>`等`Flask`风格的`URI`，兼容`Tornado`正则表达式风格`URL`。
 - 支持`Flask`框架的`url_for`函数，使用`RequestHandler`的`__endpoint__`属性指定`endpoint`名称，未指定则默认为`__class__.__name__`。
 
